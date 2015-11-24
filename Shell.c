@@ -4,6 +4,8 @@
 #include <string.h>
 
 
+int emp_flag = 0;
+
 struct word_list {
 	char *word;
 	struct word_list* next;
@@ -51,7 +53,15 @@ char* read_word()
 			n++;
 		}
 		c = *line;
-		if (c == '\n'  && i == 1)
+		if (c == '&'){
+			emp_flag++;
+			if(in_word){
+				in_word--;
+				*p = '\0';
+				return word;
+			}
+		}
+		if (c == '\n'  && i == 0)
 			return NULL;
 		if(isspace(c)){
 			if (c == '\n'|| c == EOF){
@@ -177,6 +187,7 @@ void FreeArray(char **array){
 
 int main(){
 	l:;
+	emp_flag = 0;
 	struct word_list *list;
 	list = NULL;
 	line = GetLineUnlim();
@@ -185,6 +196,8 @@ int main(){
 	char *word;
 	do {
 		word = read_word();
+		if ((emp_flag >0) && (word != NULL)) 
+			{perror("Error: '&' is not the last symbol\n"); _exit(1);}
 		if(word != NULL)
 			if (list == NULL){
 				list = addword(word);
